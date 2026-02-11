@@ -11,7 +11,11 @@ def create_app():
     @app.route("/")
     def home():
         return jsonify({"status": "server running"})
+    from routes.relief import relief_bp
+    from routes.damage import damage_bp
 
+    app.register_blueprint(relief_bp)
+    app.register_blueprint(damage_bp)
     # 🔹 TEST ROUTE FOR SQLITE
     from database.models import Area
 
