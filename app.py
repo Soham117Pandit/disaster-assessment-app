@@ -3,7 +3,7 @@ from config import Config
 from extensions import db
 
 def create_app():
-    app = Flask(__name__)   # ✅ app is created HERE
+    app = Flask(__name__)
     app.config.from_object(Config)
 
     db.init_app(app)
@@ -12,13 +12,19 @@ def create_app():
     def home():
         return jsonify({"status": "server running"})
 
-    # ✅ import AFTER app is created
-    from routes.relief import relief_bp
-    from routes.damage import damage_bp
+    # 🔹 TEST ROUTE FOR SQLITE
+    from database.models import Area
 
-    # ✅ register AFTER import
-    app.register_blueprint(relief_bp)
-    app.register_blueprint(damage_bp)
+    @app.route("/create-area")
+    def create_area():
+        area = Area(name="Hostel A", risk_level="High")
+        db.session.add(area)
+        db.session.commit()
+        return {"message": "Area created"}
+
+    # 🔹 CREATE TABLES
+    with app.app_context():
+        db.create_all()
 
     return app
 
@@ -27,4 +33,3 @@ app = create_app()
 
 if __name__ == "__main__":
     app.run(debug=True)
-
